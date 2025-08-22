@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,79 +17,107 @@ import {
 import { Input } from "@/components/ui/input";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "sonner";
+import { setToken } from "@/lib/tokenizer";
 
-const FormSchema = z.object({
-  username: z.string().min(2, "Username must be at least 2 characters."),
-  password: z.string().min(2, "Password must be at least 2 characters."),
+const formSchema = z.object({
+  username: z
+    .string()
+    .nonempty("Username is required")
+    .min(2, "Username must be at least 2 characters."),
+  password: z
+    .string()
+    .nonempty("Password is required")
+    .min(8, "Password must be at least 8 characters."),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function Login() {
   const router = useRouter();
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: FormData) {
     try {
       const res = await axios.post("/auth/login", data);
       const token = res.data.token;
-      console.log(token);
+      await setToken(token);
       router.push("/articles");
     } catch (error) {
       console.error(error);
+      toast.error("Invalid username or password");
     }
   }
 
   return (
-    <div className="max-w-sm min-h-dvh mx-auto">
-      <Form {...form}>
-        <h1 className="text-center text-2xl font-bold mt-6">Login</h1>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="xw-2/3 space-y-6"
-        >
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="username" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="min-h-screen flex justify-center items-center px-4">
+      <div className="px-4 py-10 bg-white rounded-lg w-sm">
+        <figure className="flex justify-center mb-8">
+          <img src="/logo.svg" alt="LogoIpsum" className="w-44" />
+        </figure>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full space-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="input username"
+                      {...field}
+                      type="text"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="********" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-        </form>
-      </Form>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="input password"
+                      {...field}
+                      type="password"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? "Loading..." : "Login"}
+            </Button>
+          </form>
+          <p className="text-center mt-6">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="underline text-blue-500">
+              Register
+            </Link>
+          </p>
+        </Form>
+      </div>
     </div>
   );
 }
