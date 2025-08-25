@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,10 +51,11 @@ export default function Login() {
       const res = await axios.post("/auth/login", data);
       const token = res.data.token;
       await setToken(token);
-      router.push("/articles");
-    } catch (error) {
-      console.error(error);
-      toast.error("Invalid username or password");
+      router.push("/", { scroll: false });
+    } catch (error: any) {
+      // console.error(error);
+      // toast.error("Invalid username or password");
+      toast.error(error.response.data.error);
     }
   }
 

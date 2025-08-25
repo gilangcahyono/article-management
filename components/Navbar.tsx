@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -21,28 +19,36 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Image from "next/image";
 
 const Navbar = async () => {
   return (
     <>
       <nav className="shadow flex items-center justify-between p-4">
-        <Link href="/articles">
-          <img src="/logo.svg" alt="LogoIpsum" className="w-32" />
+        <Link href="/">
+          <Image
+            src="/logo.svg"
+            width={100}
+            height={100}
+            alt="LogoIpsum"
+            className="w-32"
+          />
         </Link>
 
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger className="flex items-center gap-3">
             <Avatar>
               <AvatarImage />
               <AvatarFallback className="bg-blue-200 font-semibold">
                 J
               </AvatarFallback>
             </Avatar>
+            <p className="hidden sm:block underline text-blue-500">joniku</p>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href="/profile">Profile</Link>
             </DropdownMenuItem>
             <AlertDialog>

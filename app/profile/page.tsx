@@ -31,7 +31,7 @@ const Page = async () => {
             {user.username[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <Button asChild className="w-full">
+        <Button asChild className="w-full sm:w-sm">
           <Link href="/">Back to Home</Link>
         </Button>
       </div>

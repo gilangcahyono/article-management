@@ -18,14 +18,20 @@ import SearchInput from "@/components/SearchInput";
 import { getToken } from "@/lib/tokenizer";
 
 interface Params {
-  searchParams: Promise<{ search: string; category: string }>;
+  searchParams: Promise<{ search: string; category: string; page: string }>;
 }
 
 const Page: React.FC<Params> = async ({ searchParams }) => {
   const search = (await searchParams).search;
   const category = (await searchParams).category;
+  const page = (await searchParams).page;
   const res = await axios.get("/articles", {
-    params: { title: search, category: category },
+    params: {
+      title: search,
+      category: category,
+      sortOrder: "asc",
+      page: page || 1,
+    },
     headers: { Authorization: `Bearer ${await getToken()}` },
   });
   const articles: Article[] = res.data.data;
@@ -34,10 +40,14 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
     <>
       <Navbar />
       <SearchInput />
-      <div className="px-4">
-        <p className="hidden sm:block text-sm font-semibold text-muted-foreground mb-3">
-          Showing : {articles.length} of {res.data.total}
-        </p>
+
+      <div className="px-4 my-6">
+        {articles.length > 0 && (
+          <p className="hidden sm:block text-sm font-semibold text-muted-foreground mb-3">
+            Showing : {articles.length} of {res.data.total}
+          </p>
+        )}
+
         <div className="flex gap-8 flex-wrap justify-center">
           {articles &&
             articles.map((article: Article, i: number) => (
@@ -79,32 +89,43 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
               </div>
             ))}
 
-          {!articles.length && <p className="text-center">No articles found</p>}
+          {!articles.length && (
+            <p className="text-center xmy-10">No articles found</p>
+          )}
         </div>
-        <Pagination className="my-10">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+
+        {articles.length > 0 && (
+          <Pagination className="my-10">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={
+                    !page ? "/articles#" : `/articles?page=${Number(page) - 1}`
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#">1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  2
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#">3</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href={`/articles?page=${!page ? 2 : Number(page) + 1}`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
       <Footer />
     </>

@@ -61,7 +61,7 @@ export default function Login() {
       const res = await axios.post("/auth/login", credentials);
       const token = res.data.token;
       await setToken(token);
-      router.push("/articles");
+      router.push("/", { scroll: false });
     } catch (error) {
       console.error(error);
       toast.error("Invalid username or password");

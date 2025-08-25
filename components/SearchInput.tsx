@@ -29,18 +29,18 @@ const SearchInput = () => {
 
   useEffect(() => {
     if (category.trim()) {
-      router.push(`/articles?category=${encodeURIComponent(category)}`);
+      router.push(`/?category=${encodeURIComponent(category)}`);
     } else {
-      router.replace("/articles");
+      router.replace("/");
     }
   }, [category, router]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (search.trim()) {
-        router.push(`/articles?search=${encodeURIComponent(search)}`);
+        router.push(`/?search=${encodeURIComponent(search)}`);
       } else {
-        router.replace("/articles");
+        router.replace("/");
       }
     }, 300);
 
@@ -48,19 +48,16 @@ const SearchInput = () => {
   }, [search, router]);
 
   return (
-    <section className="bg-blue-500 py-10 mb-6">
+    <section className="bg-blue-500 py-10">
       <div className="flex flex-col sm:flex-row justify-center gap-2 bg-blue-400 w-xs sm:w-fit mx-auto p-1.5 rounded-lg">
-        <Select
-          onValueChange={(value) => setCategory(value)}
-          defaultValue={category}
-        >
+        <Select onValueChange={(value) => setCategory(value)} value={category}>
           <SelectTrigger className="bg-white w-full sm:w-fit">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {categories.map((category: Category, i: number) => (
-                <SelectItem key={i} value={category.name}>
+                <SelectItem key={i} value={category.id || "null"}>
                   {category.name}
                 </SelectItem>
               ))}
