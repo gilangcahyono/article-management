@@ -14,11 +14,7 @@ interface Props {
 const Page: React.FC<Props> = async ({ params }) => {
   const { id: articleId } = await params;
   const token = await getToken();
-  const res = await axios.get(`/articles/${articleId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const res = await axios.get(`/articles/${articleId}`);
 
   const article: Article = res.data;
 
@@ -56,7 +52,10 @@ const Page: React.FC<Props> = async ({ params }) => {
           />
         </figure>
 
-        <div dangerouslySetInnerHTML={{ __html: article.content }} />
+        <section
+          id="content"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
 
         <h4 className="font-bold text-xl my-6">Other articles</h4>
 

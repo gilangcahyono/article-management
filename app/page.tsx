@@ -24,20 +24,19 @@ interface Params {
 const Page: React.FC<Params> = async ({ searchParams }) => {
   const search = (await searchParams).search;
   const category = (await searchParams).category;
-  const page = (await searchParams).page;
+  // const page = (await searchParams).page;
 
   const res = await axios.get("/articles", {
     params: {
       title: search,
       category: category,
       sortOrder: "asc",
-      page: page || 1,
+      // page: page || 1,
     },
     headers: { Authorization: `Bearer ${await getToken()}` },
   });
 
   const articles: Article[] = res.data.data;
-  console.log(articles);
   return (
     <>
       <Navbar />
@@ -96,7 +95,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
           )}
         </div>
 
-        {articles.length > 0 && (
+        {/* {articles.length > 0 && (
           <Pagination className="my-10">
             <PaginationContent>
               <PaginationItem>
@@ -125,7 +124,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        )}
+        )} */}
       </div>
       <Footer />
     </>

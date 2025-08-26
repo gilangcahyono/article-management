@@ -24,15 +24,21 @@ const SearchInput = () => {
   const router = useRouter();
 
   useEffect(() => {
-    axios.get("/categories").then((res) => setCategories(res.data.data));
+    axios.get("/categories").then((res) => {
+      const data = res.data.data.filter(
+        (category: Category) => category.id !== ""
+      );
+      setCategories(data);
+    });
   }, []);
 
   useEffect(() => {
-    if (category.trim()) {
-      router.push(`/?category=${encodeURIComponent(category)}`);
-    } else {
-      router.replace("/");
-    }
+    // if (category.trim()) {
+    router.push(`/?category=${encodeURIComponent(category)}`);
+    // } else {
+    //   router.replace("/");
+    //   setCategory("");
+    // }
   }, [category, router]);
 
   useEffect(() => {
