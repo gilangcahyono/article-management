@@ -22,14 +22,14 @@ const Toolbar = () => {
   const [search, setSearch] = useState<string>(searchParam || "");
   const router = useRouter();
 
-  useEffect(() => {
-    if (search.trim()) {
-      router.push(`/dashboard/categories?search=${encodeURIComponent(search)}`);
-    } else {
-      router.replace("/dashboard/categories");
-      setSearch("");
-    }
-  }, [search, router]);
+  // useEffect(() => {
+  //   if (search.trim()) {
+  //     router.push(`/dashboard/categories?search=${encodeURIComponent(search)}`);
+  //   } else {
+  //     router.replace("/dashboard/categories");
+  //     setSearch("");
+  //   }
+  // }, [search, router]);
 
   return (
     <div className="flex flex-col-reverse sm:flex-row mb-5 gap-3">

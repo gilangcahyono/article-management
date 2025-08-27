@@ -117,6 +117,7 @@ const Toolbar = () => {
                         placeholder="Input category"
                         {...field}
                         type="text"
+                        readOnly={form.formState.isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -125,10 +126,19 @@ const Toolbar = () => {
               />
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button
+                    variant="outline"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    Cancel
+                  </Button>
                 </DialogClose>
-                <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                  Add
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="bg-blue-500 hover:bg-blue-600"
+                >
+                  {form.formState.isSubmitting ? "Adding..." : "Add"}
                 </Button>
               </DialogFooter>
             </form>

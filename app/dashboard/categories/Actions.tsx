@@ -125,6 +125,7 @@ const Actions: React.FC<{ category: Category }> = ({ category }) => {
                         placeholder="Input category"
                         {...field}
                         type="text"
+                        readOnly={form.formState.isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -133,10 +134,19 @@ const Actions: React.FC<{ category: Category }> = ({ category }) => {
               />
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button
+                    disabled={form.formState.isSubmitting}
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
                 </DialogClose>
-                <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                  Save Changes
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="bg-blue-500 hover:bg-blue-600"
+                >
+                  {form.formState.isSubmitting ? "Updating..." : "Update"}
                 </Button>
               </DialogFooter>
             </form>
