@@ -4,7 +4,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -20,21 +19,33 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
+import { LogOut, User } from "lucide-react";
+import { getToken } from "@/lib/tokenizer";
 
 const Navbar = async () => {
-  return (
-    <>
-      <nav className="shadow flex items-center justify-between p-4">
-        <Link href="/">
-          <Image
-            src="/logo.svg"
-            width={100}
-            height={100}
-            alt="LogoIpsum"
-            className="w-32"
-          />
-        </Link>
+  const token = await getToken();
 
+  return (
+    <nav className="shadow flex items-center justify-between p-4">
+      <Link href="/">
+        <Image
+          src="/logo.svg"
+          width={100}
+          height={100}
+          alt="LogoIpsum"
+          className="w-32"
+        />
+      </Link>
+
+      {!token ? (
+        <Link href="/login">
+          <Avatar>
+            <AvatarFallback className="bg-blue-200 font-semibold">
+              <User size={20} />
+            </AvatarFallback>
+          </Avatar>
+        </Link>
+      ) : (
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-3">
             <Avatar>
@@ -45,15 +56,20 @@ const Navbar = async () => {
             </Avatar>
             <p className="hidden sm:block underline text-blue-500">joniku</p>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+          <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild>
-              <Link href="/profile">Profile</Link>
+              <Link href="/profile">My Profile</Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/articles">Dashboard</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <DropdownMenuItem className="w-full">Logout</DropdownMenuItem>
+                <DropdownMenuItem className="w-full text-red-500">
+                  <LogOut className="text-red-500" />
+                  Logout
+                </DropdownMenuItem>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -70,8 +86,8 @@ const Navbar = async () => {
             </AlertDialog>
           </DropdownMenuContent>
         </DropdownMenu>
-      </nav>
-    </>
+      )}
+    </nav>
   );
 };
 

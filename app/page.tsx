@@ -5,17 +5,16 @@ import { formatedDate } from "@/lib/utils";
 import { Article } from "@/types/articles";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationEllipsis,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from "@/components/ui/pagination";
 import SearchInput from "@/components/SearchInput";
-import { getToken } from "@/lib/tokenizer";
 
 interface Params {
   searchParams: Promise<{ search: string; category: string; page: string }>;
@@ -24,16 +23,15 @@ interface Params {
 const Page: React.FC<Params> = async ({ searchParams }) => {
   const search = (await searchParams).search;
   const category = (await searchParams).category;
-  // const page = (await searchParams).page;
+  const page = (await searchParams).page;
 
   const res = await axios.get("/articles", {
     params: {
       title: search,
       category: category,
       sortOrder: "asc",
-      // page: page || 1,
+      page: page || 1,
     },
-    headers: { Authorization: `Bearer ${await getToken()}` },
   });
 
   const articles: Article[] = res.data.data;
@@ -76,8 +74,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
                 <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                   Neque, velit? Assumenda, dolor eligendi inventore iste tenetur
-                  dolores quasi expedita earum. Beatae aperiam ab, saepe non
-                  rerum quod quasi id a.{article.content}
+                  dolores quasi expedita earum. {article.content}
                 </p>
                 <div className="flex gap-3 mt-2">
                   <Link
@@ -126,6 +123,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
           </Pagination>
         )} */}
       </div>
+
       <Footer />
     </>
   );

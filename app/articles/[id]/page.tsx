@@ -33,12 +33,13 @@ const Page: React.FC<Props> = async ({ params }) => {
   return (
     <>
       <Navbar />
+
       <div className="px-4 sm:px-[10vw] my-6">
         <p className="text-center font-semibold text-muted-foreground mb-3">
-          {formatedDate(article.createdAt)} - Created by Admin
+          {formatedDate(article.createdAt)} - Created by {article.user.username}
         </p>
         <h1 className="text-center font-semibold text-3xl mb-6 sm:mb-10">
-          {article.title} Lorem ipsum dolor sit amet consectetur.
+          {article.title}
         </h1>
         <figure className="mb-6">
           <Image
@@ -59,10 +60,10 @@ const Page: React.FC<Props> = async ({ params }) => {
 
         <h4 className="font-bold text-xl my-6">Other articles</h4>
 
-        <div className="flex gap-8 flex-wrap justify-center sm:justify-between ">
+        <div className="flex gap-8 flex-wrap justify-center sm:justify-normal">
           {otherArticles &&
             otherArticles.map((article: Article, i: number) => (
-              <div key={i} className="w-full sm:w-xs">
+              <div key={i} className="w-full sm:max-w-3xs">
                 <Image
                   loading="lazy"
                   src={
@@ -91,7 +92,7 @@ const Page: React.FC<Props> = async ({ params }) => {
                 </p>
                 <div className="flex gap-3 mt-2">
                   <Link
-                    href={`/articles?category=${article.category.name}`}
+                    href={`/?category=${article.category.id}`}
                     className="bg-blue-200 rounded-xl px-3 py-1 text-sm text-blue-900"
                   >
                     {article.category.name}
@@ -101,6 +102,7 @@ const Page: React.FC<Props> = async ({ params }) => {
             ))}
         </div>
       </div>
+
       <Footer />
     </>
   );

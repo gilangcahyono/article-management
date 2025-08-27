@@ -29,17 +29,26 @@ import {
 } from "@/components/ui/select";
 import { setToken } from "@/lib/tokenizer";
 
-const formSchema = z.object({
-  username: z
-    .string()
-    .nonempty("Username is required.")
-    .min(2, "Username must be at least 2 characters."),
-  password: z
-    .string()
-    .nonempty("Password is required.")
-    .min(8, "Password must be at least 8 characters."),
-  role: z.string().nonempty("Role is required."),
-});
+const formSchema = z
+  .object({
+    username: z
+      .string()
+      .nonempty("Username is required.")
+      .min(2, "Username must be at least 2 characters."),
+    password: z
+      .string()
+      .nonempty("Password is required.")
+      .min(8, "Password must be at least 8 characters."),
+    confirmPassword: z
+      .string()
+      .nonempty("Confirm Password is required.")
+      .min(8, "Confirm Password must be at least 8 characters."),
+    role: z.string().nonempty("Role is required."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -50,6 +59,7 @@ export default function Login() {
     defaultValues: {
       username: "",
       password: "",
+      confirmPassword: "",
       role: "",
     },
   });
@@ -62,6 +72,7 @@ export default function Login() {
       const token = res.data.token;
       await setToken(token);
       router.push("/", { scroll: false });
+      toast.success("Registration successful");
     } catch (error) {
       console.error(error);
       toast.error("Invalid username or password");
@@ -103,6 +114,24 @@ export default function Login() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="input password"
+                      {...field}
+                      type="password"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="input password"
