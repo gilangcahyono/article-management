@@ -47,9 +47,13 @@ const Actions: React.FC<{ article: Article }> = ({ article }) => {
       >
         <Eye size={20} />
       </Link>
-      <button className="text-yellow-500 underline">
+      <Link
+        href={`/dashboard/articles/${article.id}/edit`}
+        className="text-yellow-500 underline"
+      >
         <SquarePen size={20} />
-      </button>
+      </Link>
+
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Trash2 size={20} className="text-red-500" />

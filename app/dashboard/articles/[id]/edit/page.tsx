@@ -28,6 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { use, useEffect, useState } from "react";
+import { Article } from "@/types/articles";
 
 const formSchema = z.object({
   title: z.string().nonempty("Please enter a title"),
@@ -36,17 +38,37 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+type Props = {
+  params: Promise<{ id: string }>;
+};
 
-const Page: React.FC = () => {
+const Page: React.FC<Props> = ({ params }) => {
+  const { id: articleId } = use(params);
+  const [article, setArticle] = useState<Article>();
+
+  useEffect(() => {
+    axios.get(`/articles/${articleId}`).then((res) => setArticle(res.data));
+  }, [articleId]);
+
   const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      categoryId: "",
-      content: "",
+      title: article?.title,
+      categoryId: article?.categoryId,
+      content: article?.content,
     },
   });
+
+  useEffect(() => {
+    if (article) {
+      form.reset({
+        title: article.title,
+        categoryId: article.categoryId,
+        content: article.content,
+      });
+    }
+  }, [article, form]);
 
   const onSubmit = async (data: FormData) => {
     console.log(data);
@@ -73,7 +95,7 @@ const Page: React.FC = () => {
         <Link href="/dashboard/articles">
           <ArrowLeft size={20} />
         </Link>
-        Create Article
+        Edit Article
       </div>
 
       <Form {...form}>
