@@ -25,6 +25,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
     params: {
       search,
       page: page || 1,
+      limit: 50,
     },
   });
 

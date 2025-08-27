@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -14,13 +15,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import axios from "@/lib/axios";
+import { toast } from "sonner";
+import { getToken } from "@/lib/tokenizer";
+
+const formSchema = z.object({
+  name: z.string().nonempty("Category field cannot be empty"),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 const Toolbar = () => {
   const queryParams = useSearchParams();
   const searchParam = queryParams.get("search");
   const [search, setSearch] = useState<string>(searchParam || "");
-  const [category, setCategory] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,9 +52,29 @@ const Toolbar = () => {
     }
   }, [search, router]);
 
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(category);
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
+    const token = await getToken();
+    try {
+      await axios.post("/categories", data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setOpen(false);
+      router.refresh();
+      form.reset();
+      toast.success("Category added successfully");
+    } catch (error: any) {
+      toast.error(error.response.data.error);
+    }
   };
 
   return (
@@ -50,7 +90,7 @@ const Toolbar = () => {
         />
       </div>
 
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
             type="button"
@@ -61,28 +101,38 @@ const Toolbar = () => {
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-sm">
-          <form onSubmit={handleAdd} className="space-y-4">
-            <DialogHeader>
-              <DialogTitle className="mb-3">Add Category</DialogTitle>
-            </DialogHeader>
-            <div className="flex gap-2 flex-col">
-              <Label htmlFor="add-category">Category</Label>
-              <Input
-                id="add-category"
-                onChange={(e) => setCategory(e.target.value)}
-                value={category}
-                placeholder="Input category"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <DialogHeader>
+                <DialogTitle className="mb-3">Add Category</DialogTitle>
+              </DialogHeader>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Input category"
+                        {...field}
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                Add
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
+                  Add
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

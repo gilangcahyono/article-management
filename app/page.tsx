@@ -31,6 +31,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
       category: category,
       sortOrder: "asc",
       page: page || 1,
+      limit: 50,
     },
   });
 

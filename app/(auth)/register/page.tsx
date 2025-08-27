@@ -60,7 +60,7 @@ export default function Login() {
       username: "",
       password: "",
       confirmPassword: "",
-      role: "",
+      role: "Admin",
     },
   });
 
@@ -171,7 +171,7 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-blue-500 hover:bg-blue-600"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Loading..." : "Register"}

@@ -6,7 +6,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,6 +21,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { setToken } from "@/lib/tokenizer";
+import { useUserStore } from "@/stores/useUserStore";
 
 const formSchema = z.object({
   username: z
@@ -38,6 +38,8 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function Login() {
   const router = useRouter();
+  const { setUser } = useUserStore();
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,18 +48,17 @@ export default function Login() {
     },
   });
 
-  async function onSubmit(data: FormData) {
+  const onSubmit = async (data: FormData) => {
     try {
       const res = await axios.post("/auth/login", data);
       const token = res.data.token;
+      setUser(data.username);
       await setToken(token);
       router.push("/", { scroll: false });
     } catch (error: any) {
-      // console.error(error);
-      // toast.error("Invalid username or password");
       toast.error(error.response.data.error);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex justify-center items-center px-4">
@@ -107,7 +108,7 @@ export default function Login() {
             />
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-blue-500 hover:bg-blue-600"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Loading..." : "Login"}

@@ -10,25 +10,15 @@ import {
 import axios from "@/lib/axios";
 import { formatedDate } from "@/lib/utils";
 import { Article } from "@/types/articles";
-import { Eye, Plus, Search, SquarePen, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import Actions from "./Actions";
+import Toolbar from "./Toolbar";
 
-interface Params {
+type Props = {
   searchParams: Promise<{ search: string; category: string; page: string }>;
-}
+};
 
-const Page: React.FC<Params> = async ({ searchParams }) => {
+const Page: React.FC<Props> = async ({ searchParams }) => {
   const search = (await searchParams).search;
   const category = (await searchParams).category;
   const page = (await searchParams).page;
@@ -51,18 +41,23 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
         Total Articles : {articles.length}
       </h2>
 
-      <div className="flex flex-col-reverse sm:flex-row mb-5 gap-3">
+      <Toolbar />
+
+      {/* <div className="flex flex-col-reverse sm:flex-row mb-5 gap-3">
         <Select>
           <SelectTrigger className="bg-white w-full sm:w-fit">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {/* {categories.map((category: Category, i: number) => (
+              {categories.map((category: Category, i: number) => (
                 <SelectItem key={i} value={category.id}>
                   <span className="text-black">{category.name}</span>
                 </SelectItem>
-              ))} */}
+              ))}
+              <SelectItem value="Management">
+                <span className="text-black">Management</span>
+              </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -76,12 +71,12 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
           className="bg-blue-500 hover:bg-blue-600 ms-auto w-full sm:w-fit"
           asChild
         >
-          <Link href="/articles/add">
+          <Link href="/dashboard/articles/add">
             <Plus />
             Write an article
           </Link>
         </Button>
-      </div>
+      </div> */}
 
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
@@ -106,26 +101,13 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
                   className="rounded-lg"
                 />
               </TableCell>
-              <TableCell className="max-w-96 overflow-hidden text-ellipsis">
+              <TableCell className="max-w-xs overflow-hidden text-ellipsis">
                 {article.title}
               </TableCell>
               <TableCell>{article.category.name}</TableCell>
               <TableCell>{formatedDate(article.createdAt)}</TableCell>
               <TableCell>
-                <div className="flex gap-3">
-                  <Link
-                    href={`/articles/${article.id}`}
-                    className="text-blue-500 underline"
-                  >
-                    <Eye size={20} />
-                  </Link>
-                  <button className="text-yellow-500 underline">
-                    <SquarePen size={20} />
-                  </button>
-                  <button className="text-red-500 underline">
-                    <Trash2 size={20} />
-                  </button>
-                </div>
+                <Actions article={article} />
               </TableCell>
             </TableRow>
           ))}

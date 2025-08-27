@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -16,14 +18,24 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
 import { LogOut, User } from "lucide-react";
-import { getToken } from "@/lib/tokenizer";
+import { useState } from "react";
+import { removeToken } from "@/lib/tokenizer";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/stores/useUserStore";
 
-const Navbar = async () => {
-  const token = await getToken();
+const Navbar = () => {
+  const [open, setOpen] = useState<boolean>(false);
+  const router = useRouter();
+  const { user, clearuser } = useUserStore();
+
+  const logout = async () => {
+    await removeToken();
+    router.push("/");
+    clearuser();
+  };
 
   return (
     <nav className="shadow flex items-center justify-between p-4">
@@ -37,7 +49,7 @@ const Navbar = async () => {
         />
       </Link>
 
-      {!token ? (
+      {!user ? (
         <Link href="/login">
           <Avatar>
             <AvatarFallback className="bg-blue-200 font-semibold">
@@ -51,10 +63,10 @@ const Navbar = async () => {
             <Avatar>
               <AvatarImage />
               <AvatarFallback className="bg-blue-200 font-semibold">
-                J
+                {user[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <p className="hidden sm:block underline text-blue-500">joniku</p>
+            <p className="hidden sm:block underline text-blue-500">{user}</p>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild>
@@ -64,29 +76,35 @@ const Navbar = async () => {
               <Link href="/dashboard/articles">Dashboard</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem className="w-full text-red-500">
-                  <LogOut className="text-red-500" />
-                  Logout
-                </DropdownMenuItem>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Logout</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure want to logout?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Logout</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <DropdownMenuItem asChild className="w-full text-red-500">
+              <button onClick={() => setOpen(true)}>
+                <LogOut className="text-red-500" />
+                Logout
+              </button>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent className="w-xs">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Logout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure want to logout?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={logout}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </nav>
   );
 };
