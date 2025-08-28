@@ -18,9 +18,12 @@ import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import Preview from "@/components/Preview";
+import { useState } from "react";
 
 const Actions: React.FC<{ article: Article }> = ({ article }) => {
   const router = useRouter();
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleDelete = async (articleId: string) => {
     const token = await getToken();
@@ -41,12 +44,14 @@ const Actions: React.FC<{ article: Article }> = ({ article }) => {
 
   return (
     <div className="flex gap-3">
-      <Link
+      {/* <Link
         href={`/articles/${article.id}`}
         className="text-blue-500 underline"
       >
         <Eye size={20} />
-      </Link>
+      </Link> */}
+      <Eye size={20} className="text-blue-500" onClick={() => setOpen(true)} />
+      <Preview article={article} open={open} setOpen={setOpen} />
       <Link
         href={`/dashboard/articles/${article.id}/edit`}
         className="text-yellow-500 underline"

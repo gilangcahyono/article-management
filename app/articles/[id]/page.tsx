@@ -7,17 +7,15 @@ import { Article } from "@/types/articles";
 import Image from "next/image";
 import Link from "next/link";
 
-interface Props {
+type Props = {
   params: Promise<{ id: string }>;
-}
+};
 
 const Page: React.FC<Props> = async ({ params }) => {
   const { id: articleId } = await params;
   const token = await getToken();
   const res = await axios.get(`/articles/${articleId}`);
-
   const article: Article = res.data;
-
   const other = await axios.get(`/articles`, {
     params: {
       category: article.categoryId,
@@ -27,7 +25,6 @@ const Page: React.FC<Props> = async ({ params }) => {
       Authorization: `Bearer ${token}`,
     },
   });
-
   const otherArticles: Article[] = other.data.data;
 
   return (

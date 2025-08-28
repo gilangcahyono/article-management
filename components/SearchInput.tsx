@@ -58,13 +58,11 @@ const SearchInput = () => {
       <div className="absolute inset-0 bg-blue-500/90" />
 
       <div className="relative z-10 text-white text-center flex flex-col gap-3 items-center justify-center h-full">
-        <p className="font-semibold">My Blog</p>
+        <p className="font-semibold">Blog M</p>
         <h1 className="text-2xl sm:text-4xl font-semibold">
-          The Jurnal : Design Resources, <br /> Interviews, and Industry News
+          Exploring thoughts, stories, and everything in between.
         </h1>
-        <h3 className="text-xl font-normal mb-4">
-          Your daily dose of design insights
-        </h3>
+        <h3 className="text-xl font-normal mb-4">Your daily dose of insight</h3>
         <div className="flex flex-col h-fit sm:flex-row justify-center gap-2 bg-blue-400 w-xs sm:w-fit mx-auto p-1.5 rounded-lg">
           <Select
             onValueChange={(value) => setCategory(value)}

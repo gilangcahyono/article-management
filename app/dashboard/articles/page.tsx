@@ -94,11 +94,13 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
             <TableRow key={i}>
               <TableCell>
                 <Image
-                  src={`https://robohash.org/${i}.jpg`}
-                  width={50}
-                  height={50}
+                  src={
+                    article.imageUrl || `https://robohash.org/${article.id}.jpg`
+                  }
+                  width={100}
+                  height={100}
                   alt="Thumbnail"
-                  className="rounded-lg"
+                  className="rounded-lg object-cover w-10 h-10"
                 />
               </TableCell>
               <TableCell className="max-w-xs overflow-hidden text-ellipsis">
