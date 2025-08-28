@@ -18,11 +18,11 @@ export const metadata: Metadata = {
   title: "My Blog",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+type Props = {
   children: React.ReactNode;
-}>) {
+};
+
+const RootLayout: React.FC<Props> = ({ children }) => {
   return (
     <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
       <body
@@ -34,4 +34,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

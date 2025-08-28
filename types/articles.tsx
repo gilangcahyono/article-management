@@ -9,7 +9,7 @@ export interface Article {
   updatedAt: string;
   category: Category;
   user: User;
-  thumbnail?: string;
+  thumbnail: string;
 }
 
 export interface Category {

@@ -1,24 +1,24 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import SearchInput from "@/components/SearchInput";
 import axios from "@/lib/axios";
 import { formatedDate } from "@/lib/utils";
 import { Article } from "@/types/articles";
 import Image from "next/image";
 import Link from "next/link";
-// import {
-//   Pagination,
-//   PaginationContent,
-//   PaginationEllipsis,
-//   PaginationItem,
-//   PaginationLink,
-//   PaginationNext,
-//   PaginationPrevious,
-// } from "@/components/ui/pagination";
-import SearchInput from "@/components/SearchInput";
 
-interface Params {
+type Params = {
   searchParams: Promise<{ search: string; category: string; page: string }>;
-}
+};
 
 const Page: React.FC<Params> = async ({ searchParams }) => {
   const search = (await searchParams).search;
@@ -42,11 +42,9 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
       <SearchInput />
 
       <div className="px-4 my-6">
-        {articles.length > 0 && (
-          <p className="hidden sm:block text-sm font-semibold text-muted-foreground mb-3">
-            Showing : {articles.length} of {res.data.total}
-          </p>
-        )}
+        <p className="hidden sm:block text-sm font-semibold text-muted-foreground mb-3">
+          Showing : {articles.length} of {res.data.total}
+        </p>
 
         <div className="flex gap-8 flex-wrap justify-center">
           {articles &&
@@ -56,7 +54,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
                   loading="lazy"
                   src={
                     article.imageUrl ||
-                    `https://robohash.org/${article.title}.jpeg`
+                    `https://robohash.org/${article.id}.jpeg`
                   }
                   alt={article.title}
                   width={100}
@@ -93,7 +91,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
           )}
         </div>
 
-        {/* {articles.length > 0 && (
+        {articles.length > 0 && (
           <Pagination className="my-10">
             <PaginationContent>
               <PaginationItem>
@@ -122,7 +120,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        )} */}
+        )}
       </div>
 
       <Footer />
