@@ -10,7 +10,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,32 +31,32 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import Preview from "@/components/Preview";
 import { useEffect, useState } from "react";
-import { Article } from "@/types/articles";
+import { Category } from "@/types/articles";
 
-const article: Article = {
-  id: "7a768e14-567f-4241-a0f4-18ebb24fe6ae",
-  userId: "69d72f64-e938-40de-bbf2-15750adb4bae",
-  categoryId: "716cc32c-578a-4889-8fac-8f3a5e6e71ce",
-  title: "Kucing: Sahabat Berbulu yang Menggemaskan",
-  thumbnail: "https://robohash.org/7a768e14-567f-4241-a0f4-18ebb24fe6ae.jpg",
-  content:
-    '<p>Kucing adalah <strong>hewan peliharaan</strong> populer dengan berbagai ras dan karakter <em>unik</em>. Dikenal dengan kemandirian dan keanggunannya, kucing juga sangat penyayang dan suka bermain. Mereka memiliki insting berburu yang kuat namun bisa menjadi teman yang setia di rumah. Perawatannya relatif mudah, menjadikannya pilihan favorit banyak orang.</p><p></p><img src="https://s3.sellerpintar.com/articles/articles/1755428738389-content-image-1755428737450.png"><p></p><p></p>',
-  imageUrl:
-    "https://s3.sellerpintar.com/articles/articles/1755428738490-d17cc7bf0e13fcdf975dd682d5df792f.jpg",
-  createdAt: "2025-08-17T11:05:38.584Z",
-  updatedAt: "2025-08-17T11:05:38.584Z",
-  category: {
-    id: "716cc32c-578a-4889-8fac-8f3a5e6e71ce",
-    userId: "55b0a361-45d1-476e-bdfd-fad0e86315e5",
-    name: "Animal",
-    createdAt: "2025-08-05T02:01:39.290Z",
-    updatedAt: "2025-08-07T22:48:33.119Z",
-  },
-  user: {
-    id: "69d72f64-e938-40de-bbf2-15750adb4bae",
-    username: "riskyadmin",
-  },
-};
+// const article: Article = {
+//   id: "7a768e14-567f-4241-a0f4-18ebb24fe6ae",
+//   userId: "69d72f64-e938-40de-bbf2-15750adb4bae",
+//   categoryId: "716cc32c-578a-4889-8fac-8f3a5e6e71ce",
+//   title: "Kucing: Sahabat Berbulu yang Menggemaskan",
+//   thumbnail: "https://robohash.org/7a768e14-567f-4241-a0f4-18ebb24fe6ae.jpg",
+//   content:
+//     '<p>Kucing adalah <strong>hewan peliharaan</strong> populer dengan berbagai ras dan karakter <em>unik</em>. Dikenal dengan kemandirian dan keanggunannya, kucing juga sangat penyayang dan suka bermain. Mereka memiliki insting berburu yang kuat namun bisa menjadi teman yang setia di rumah. Perawatannya relatif mudah, menjadikannya pilihan favorit banyak orang.</p><p></p><img src="https://s3.sellerpintar.com/articles/articles/1755428738389-content-image-1755428737450.png"><p></p><p></p>',
+//   imageUrl:
+//     "https://s3.sellerpintar.com/articles/articles/1755428738490-d17cc7bf0e13fcdf975dd682d5df792f.jpg",
+//   createdAt: "2025-08-17T11:05:38.584Z",
+//   updatedAt: "2025-08-17T11:05:38.584Z",
+//   category: {
+//     id: "716cc32c-578a-4889-8fac-8f3a5e6e71ce",
+//     userId: "55b0a361-45d1-476e-bdfd-fad0e86315e5",
+//     name: "Animal",
+//     createdAt: "2025-08-05T02:01:39.290Z",
+//     updatedAt: "2025-08-07T22:48:33.119Z",
+//   },
+//   user: {
+//     id: "69d72f64-e938-40de-bbf2-15750adb4bae",
+//     username: "riskyadmin",
+//   },
+// };
 
 const formSchema = z.object({
   title: z.string().nonempty("Please enter a title"),
@@ -65,24 +64,54 @@ const formSchema = z.object({
   content: z.string().nonempty("Content field cannot be empty"),
   thumbnail: z
     .any()
-    .refine((files) => files instanceof FileList && files.length > 0, {
+    .refine((files) => files && files.length > 0, {
       message: "Please select a file",
     })
-    .refine((files) => files[0].size <= 2 * 1024 * 1024, {
+    .refine((files) => files && files[0].size <= 2 * 1024 * 1024, {
       message: "File size must be less than 2MB",
     })
-    .refine((files) => ["image/jpeg", "image/png"].includes(files[0].type), {
-      message: "File must be an image (jpeg/png)",
-    }),
-  // .transform((files) => files[0] as File),
+    .refine(
+      (files) => files && ["image/jpeg", "image/png"].includes(files[0].type),
+      {
+        message: "File must be an image (jpeg/png)",
+      }
+    )
+    .transform((files) => files[0] as File),
 });
 
 type FormData = z.infer<typeof formSchema>;
+type Article = {
+  title: string;
+  category: string;
+  content: string;
+  imageUrl: string;
+  createdAt: string;
+  user: string;
+};
 
 const Page: React.FC = () => {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [article, setArticle] = useState<Article>();
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    const res = await axios.get("/categories", {
+      params: {
+        limit: 100,
+      },
+    });
+    const data = res.data.data.filter(
+      (category: Category) => category.id !== ""
+    );
+    setCategories(data);
+  };
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,17 +122,39 @@ const Page: React.FC = () => {
     },
   });
 
+  // useEffect(() => {
+  //   setArticle({
+  //     title: form.getValues("title"),
+  //     category: form.getValues("categoryId"),
+  //     content: form.getValues("content"),
+  //     imageUrl: imagePreviewUrl || "",
+  //   });
+  // }, [form, imagePreviewUrl]);
+
   const onSubmit = async (data: FormData) => {
-    // data.content = data.content.replace(/\n/g, "<br>");
-    data.content = `<p className='mb-3'>${data.content.replace(
+    data.content = `<p class='mb-3'>${data.content.replace(
       /\n/g,
-      "</p><p className='mb-3'>"
+      "</p><p class='mb-3'>"
     )}</p>`;
-    console.log(data);
-    return;
-    const token = getToken();
+    const newThumbnail = new FormData();
+    newThumbnail.append("image", data.thumbnail);
+    const token = await getToken();
     try {
-      await axios.post("/articles", data, {
+      const res = await axios.post("/upload", newThumbnail, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const newArticle = {
+        title: data.title,
+        content: data.content,
+        categoryId: data.categoryId,
+        imageUrl: res.data.imageUrl,
+      };
+
+      await axios.post("/articles", newArticle, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -113,15 +164,17 @@ const Page: React.FC = () => {
       router.push("/dashboard/articles", { scroll: false });
       toast.success("Article created successfully");
     } catch (error: any) {
+      // console.error(error);
       toast.error(error.response.data.error);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+    form.clearErrors("thumbnail");
+    const files: any = e.target.files;
     if (!files || files.length === 0) return;
-    const file = files[0];
     form.setValue("thumbnail", files);
+    const file = files[0];
     const preview = URL.createObjectURL(file);
     setImagePreviewUrl(preview);
   };
@@ -215,8 +268,11 @@ const Page: React.FC = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="User">User</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
+                    {categories.map((category: Category, i: number) => (
+                      <SelectItem key={i} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -229,7 +285,7 @@ const Page: React.FC = () => {
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Content</FormLabel>
+                <FormLabel>Body</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
