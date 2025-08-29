@@ -44,13 +44,14 @@ const Toolbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (search.trim()) {
-      router.push(`/dashboard/categories?search=${encodeURIComponent(search)}`);
-    } else {
-      router.replace("/dashboard/categories");
-      setSearch("");
-    }
-  }, [search, router]);
+    setSearch(searchParam || "");
+  }, [searchParam]);
+
+  const handleChangeSearch = (value: string) => {
+    setSearch(value);
+    router.push(`/dashboard/categories?search=${encodeURIComponent(value)}`);
+    if (value === "") return router.replace("/dashboard/categories");
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -82,8 +83,8 @@ const Toolbar = () => {
       <div className="relative w-full max-w-xs">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
         <Input
+          onChange={(e) => handleChangeSearch(e.target.value)}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
           type="text"
           placeholder="Search category"
           className="pl-10"

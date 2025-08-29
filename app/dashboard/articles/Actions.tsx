@@ -35,21 +35,15 @@ const Actions: React.FC<{ article: Article }> = ({ article }) => {
         },
       });
       router.refresh();
-      toast.success("Category deleted successfully");
+      toast.success("Article deleted successfully");
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast.error("Failed to delete category");
     }
   };
 
   return (
     <div className="flex gap-3">
-      {/* <Link
-        href={`/articles/${article.id}`}
-        className="text-blue-500 underline"
-      >
-        <Eye size={20} />
-      </Link> */}
       <Eye size={20} className="text-blue-500" onClick={() => setOpen(true)} />
       <Preview article={article} open={open} setOpen={setOpen} />
       <Link

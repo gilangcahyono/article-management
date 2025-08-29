@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import {
   Pagination,
@@ -9,7 +10,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import SearchInput from "@/components/SearchInput";
 import axios from "@/lib/axios";
 import { formatedDate } from "@/lib/utils";
 import { Article } from "@/types/articles";
@@ -39,7 +39,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
   return (
     <>
       <Navbar />
-      <SearchInput />
+      <Hero />
 
       <div className="px-4 my-6">
         <p className="hidden sm:block text-sm font-semibold text-muted-foreground mb-3">

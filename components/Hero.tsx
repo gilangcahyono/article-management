@@ -14,51 +14,44 @@ import { Category } from "@/types/articles";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const SearchInput = () => {
+const Hero = () => {
   const queryParams = useSearchParams();
-  const categoryParam = queryParams.get("category");
   const searchParam = queryParams.get("search");
+  const category = queryParams.get("category");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [category, setCategory] = useState<string>(categoryParam || "");
   const [search, setSearch] = useState<string>(searchParam || "");
   const router = useRouter();
 
   useEffect(() => {
-    axios
-      .get("/categories", {
-        params: {
-          limit: 100,
-        },
-      })
-      .then((res) => {
-        const data = res.data.data.filter(
-          (category: Category) => category.id !== ""
-        );
-        setCategories(data);
-      });
+    getCategories();
   }, []);
 
   useEffect(() => {
-    if (category.trim()) {
-      router.push(`/?category=${encodeURIComponent(category)}`);
-      setSearch("");
-    } else {
-      router.replace("/");
-    }
-  }, [category, router]);
+    setSearch(searchParam || "");
+  }, [searchParam]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (search.trim()) {
-        router.push(`/?search=${encodeURIComponent(search)}`);
-        setCategory("");
-      } else {
-        router.replace("/");
-      }
-    }, 300);
+  const getCategories = async () => {
+    const res = await axios.get("/categories", {
+      params: {
+        limit: 100,
+      },
+    });
+    const data = res.data.data.filter(
+      (category: Category) => category.id !== ""
+    );
+    setCategories(data);
+  };
 
-    return () => clearTimeout(timeout);
-  }, [search, router]);
+  const handleChangeCategory = (value: string) => {
+    router.push(`/?category=${encodeURIComponent(value)}`);
+    setSearch("");
+  };
+
+  const handleChangeSearch = (value: string) => {
+    setSearch(value);
+    router.push(`/?search=${encodeURIComponent(value)}`);
+    if (value === "" && category !== "") return router.replace("/");
+  };
 
   return (
     <section className="relative h-[50dvh] bg-[url('https://img.lovepik.com/element/40066/4015.png_1200.png')] bg-cover bg-center bg-no-repeat">
@@ -72,10 +65,7 @@ const SearchInput = () => {
         <h3 className="text-xl font-normal mb-4">Your daily dose of insight</h3>
 
         <div className="flex flex-col h-fit sm:flex-row justify-center gap-2 bg-blue-400 w-xs sm:w-fit mx-auto p-1.5 rounded-lg">
-          <Select
-            onValueChange={(value) => setCategory(value)}
-            value={category}
-          >
+          <Select onValueChange={handleChangeCategory} value={category || ""}>
             <SelectTrigger className="bg-white w-full sm:w-fit">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -94,7 +84,7 @@ const SearchInput = () => {
             type="text"
             placeholder="Search articles"
             className="w-full sm:w-sm bg-white text-black"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleChangeSearch(e.target.value)}
             value={search}
           />
         </div>
@@ -103,4 +93,4 @@ const SearchInput = () => {
   );
 };
 
-export default SearchInput;
+export default Hero;

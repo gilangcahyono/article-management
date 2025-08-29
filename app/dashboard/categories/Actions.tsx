@@ -64,7 +64,7 @@ const Actions: React.FC<{ category: Category }> = ({ category }) => {
       router.refresh();
       toast.success("Category deleted successfully");
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast.error("Failed to delete category");
     }
   };

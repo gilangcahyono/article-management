@@ -23,13 +23,18 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
 
   const res = await axios.get("/categories", {
     params: {
-      search,
       page: page || 1,
       limit: 50,
     },
   });
+  let data = res.data.data;
+  if (search) {
+    data = res.data.data.filter((category: Category) =>
+      category.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }
 
-  const categories: Category[] = res.data.data;
+  const categories: Category[] = data;
 
   return (
     <div className="p-5 border bg-white rounded-lg">

@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImagePlus } from "lucide-react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,6 +10,7 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,6 +39,7 @@ const article: Article = {
   userId: "69d72f64-e938-40de-bbf2-15750adb4bae",
   categoryId: "716cc32c-578a-4889-8fac-8f3a5e6e71ce",
   title: "Kucing: Sahabat Berbulu yang Menggemaskan",
+  thumbnail: "https://robohash.org/7a768e14-567f-4241-a0f4-18ebb24fe6ae.jpg",
   content:
     '<p>Kucing adalah <strong>hewan peliharaan</strong> populer dengan berbagai ras dan karakter <em>unik</em>. Dikenal dengan kemandirian dan keanggunannya, kucing juga sangat penyayang dan suka bermain. Mereka memiliki insting berburu yang kuat namun bisa menjadi teman yang setia di rumah. Perawatannya relatif mudah, menjadikannya pilihan favorit banyak orang.</p><p></p><img src="https://s3.sellerpintar.com/articles/articles/1755428738389-content-image-1755428737450.png"><p></p><p></p>',
   imageUrl:
@@ -60,25 +63,42 @@ const formSchema = z.object({
   title: z.string().nonempty("Please enter a title"),
   categoryId: z.string().nonempty("Please select a category"),
   content: z.string().nonempty("Content field cannot be empty"),
+  thumbnail: z
+    .any()
+    .refine((files) => files instanceof FileList && files.length > 0, {
+      message: "Please select a file",
+    })
+    .refine((files) => files[0].size <= 2 * 1024 * 1024, {
+      message: "File size must be less than 2MB",
+    })
+    .refine((files) => ["image/jpeg", "image/png"].includes(files[0].type), {
+      message: "File must be an image (jpeg/png)",
+    }),
+  // .transform((files) => files[0] as File),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 const Page: React.FC = () => {
   const router = useRouter();
-  // const [articles, setArticles] = useState<Article>();
   const [open, setOpen] = useState<boolean>(false);
-
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       categoryId: "",
       content: "",
+      thumbnail: undefined,
     },
   });
 
   const onSubmit = async (data: FormData) => {
+    // data.content = data.content.replace(/\n/g, "<br>");
+    data.content = `<p className='mb-3'>${data.content.replace(
+      /\n/g,
+      "</p><p className='mb-3'>"
+    )}</p>`;
     console.log(data);
     return;
     const token = getToken();
@@ -97,8 +117,17 @@ const Page: React.FC = () => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    form.setValue("thumbnail", files);
+    const preview = URL.createObjectURL(file);
+    setImagePreviewUrl(preview);
+  };
+
   return (
-    <div className="p-5 border bg-white rounded-lg">
+    <div className="p-5 border bg-gray-50 rounded-lg">
       <div className="text-md font-semibold flex gap-4 items-center pb-5 mb-5 border-b">
         <Link href="/dashboard/articles">
           <ArrowLeft size={20} />
@@ -113,12 +142,57 @@ const Page: React.FC = () => {
         >
           <FormField
             control={form.control}
+            name="thumbnail"
+            render={() => (
+              <FormItem>
+                <FormLabel>Thumbnail</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="thumbnail"
+                  />
+                </FormControl>
+                <label
+                  htmlFor="thumbnail"
+                  className="border-dashed border-2 border-gray-300 overflow-hidden text-gray-500  rounded-lg w-full sm:max-w-xs aspect-video bg-white mx-auto sm:mx-0"
+                >
+                  <div
+                    className={`${
+                      imagePreviewUrl ? "hidden" : ""
+                    } flex flex-col justify-center items-center h-full`}
+                  >
+                    <ImagePlus className="mb-3" />
+                    <p className=" underline">Click to select file</p>
+                    <p className="">Support File Type: jpg or png</p>
+                  </div>
+                  {imagePreviewUrl && (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="sdfs"
+                      className="aspect-video object-cover"
+                    />
+                  )}
+                </label>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Input a title" {...field} type="text" />
+                  <Input
+                    placeholder="Input a title"
+                    {...field}
+                    type="text"
+                    className="bg-white"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -135,7 +209,7 @@ const Page: React.FC = () => {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <FormControl className="w-full">
+                  <FormControl className="w-full bg-white">
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -160,7 +234,7 @@ const Page: React.FC = () => {
                   <Textarea
                     {...field}
                     placeholder="Type a content..."
-                    className="min-h-60"
+                    className="min-h-60 bg-white"
                   />
                 </FormControl>
                 <FormMessage />
