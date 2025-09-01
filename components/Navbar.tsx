@@ -25,6 +25,7 @@ import { useState } from "react";
 import { removeToken } from "@/lib/tokenizer";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/useUserStore";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -50,13 +51,9 @@ const Navbar = () => {
       </Link>
 
       {!user ? (
-        <Link href="/login">
-          <Avatar>
-            <AvatarFallback className="bg-blue-200 font-semibold">
-              <User size={20} />
-            </AvatarFallback>
-          </Avatar>
-        </Link>
+        <Button className="bg-blue-500 hover:bg-blue-600" asChild>
+          <Link href="/login">Login</Link>
+        </Button>
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-3">

@@ -81,12 +81,12 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 type Article = {
-  title: string;
-  category: string;
-  content: string;
-  imageUrl: string;
-  createdAt: string;
-  user: string;
+  title?: string;
+  category?: string;
+  content?: string;
+  imageUrl?: string;
+  createdAt?: string;
+  user?: string;
 };
 
 const Page: React.FC = () => {
@@ -122,14 +122,17 @@ const Page: React.FC = () => {
     },
   });
 
-  // useEffect(() => {
-  //   setArticle({
-  //     title: form.getValues("title"),
-  //     category: form.getValues("categoryId"),
-  //     content: form.getValues("content"),
-  //     imageUrl: imagePreviewUrl || "",
-  //   });
-  // }, [form, imagePreviewUrl]);
+  console.log(article);
+
+  useEffect(() => {
+    setArticle({
+      title: form.getValues("title"),
+      category: form.getValues("categoryId"),
+      content: form.getValues("content"),
+      imageUrl: imagePreviewUrl,
+      createdAt: new Date().toISOString(),
+    });
+  }, [form, imagePreviewUrl]);
 
   const onSubmit = async (data: FormData) => {
     data.content = `<p class='mb-3'>${data.content.replace(

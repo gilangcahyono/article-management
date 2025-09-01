@@ -1,10 +1,18 @@
 "use client";
 
 import { formatedDate } from "@/lib/utils";
-import { Article } from "@/types/articles";
 import { X } from "lucide-react";
 import Image from "next/image";
 import Footer from "./Footer";
+
+type Article = {
+  title?: string;
+  category?: string;
+  content?: string;
+  imageUrl?: string;
+  createdAt?: string;
+  user?: string;
+};
 
 type Props = {
   open: boolean;
@@ -28,18 +36,18 @@ const Preview: React.FC<Props> = (props) => {
 
       <div className="px-4 sm:px-[10vw] my-6">
         <p className="text-center font-semibold text-muted-foreground mb-3">
-          {formatedDate(article.createdAt)} - Created by {article.user.username}
+          {formatedDate(new Date().toISOString())} - Created by {article?.user}
         </p>
 
         <h1 className="text-center font-semibold text-3xl mb-6 sm:mb-10">
-          {article.title}
+          {article?.title}
         </h1>
 
         <figure className="mb-6">
           <Image
             loading="lazy"
-            src={article.imageUrl || `https://robohash.org/${article.id}.jpg`}
-            alt={article.title}
+            src={article?.imageUrl || ""}
+            alt={article?.title || ""}
             width={0}
             height={0}
             sizes="100vw"
@@ -47,11 +55,11 @@ const Preview: React.FC<Props> = (props) => {
           />
         </figure>
 
-        <section
+        {/* <section
           id="content"
           className="overflow-hidden"
           dangerouslySetInnerHTML={{ __html: article.content }}
-        />
+        /> */}
 
         <h4 className="font-bold text-xl my-6">Other articles</h4>
 
@@ -83,7 +91,7 @@ const Preview: React.FC<Props> = (props) => {
               </p>
               <div className="flex gap-3 mt-2">
                 <span className="bg-blue-200 rounded-xl px-3 py-1 text-sm text-blue-900">
-                  Teknologi
+                  {article?.category}
                 </span>
               </div>
             </div>
