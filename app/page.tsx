@@ -41,7 +41,7 @@ const Page: React.FC<Params> = async ({ searchParams }) => {
       <Navbar />
       <Hero />
 
-      <div className="px-4 my-6">
+      <div className="px-4 my-6 min-h-[30dvh]">
         <p className="hidden sm:block text-sm font-semibold text-muted-foreground mb-3">
           Showing : {articles.length} of {res.data.total}
         </p>

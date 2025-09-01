@@ -45,7 +45,7 @@ const Actions: React.FC<{ article: Article }> = ({ article }) => {
   return (
     <div className="flex gap-3">
       <Eye size={20} className="text-blue-500" onClick={() => setOpen(true)} />
-      <Preview article={article} open={open} setOpen={setOpen} />
+      {/* <Preview article={article} open={open} setOpen={setOpen} /> */}
       <Link
         href={`/dashboard/articles/${article.id}/edit`}
         className="text-yellow-500 underline"

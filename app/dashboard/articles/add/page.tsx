@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import Preview from "@/components/Preview";
+// import Preview from "@/components/Preview";
 import { useEffect, useState } from "react";
 import { Category } from "@/types/articles";
 
@@ -121,8 +121,6 @@ const Page: React.FC = () => {
       thumbnail: undefined,
     },
   });
-
-  console.log(article);
 
   useEffect(() => {
     setArticle({
@@ -329,7 +327,7 @@ const Page: React.FC = () => {
         </form>
       </Form>
 
-      <Preview article={article} open={open} setOpen={setOpen} />
+      {/* <Preview article={article} open={open} setOpen={setOpen} /> */}
     </div>
   );
 };

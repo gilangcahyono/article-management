@@ -20,14 +20,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
-import { LogOut, User } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { useState } from "react";
 import { removeToken } from "@/lib/tokenizer";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/useUserStore";
 import { Button } from "./ui/button";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const router = useRouter();
   const { user, clearuser } = useUserStore();
@@ -56,7 +56,7 @@ const Navbar = () => {
         </Button>
       ) : (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-3">
+          <DropdownMenuTrigger className="flex items-center gap-2">
             <Avatar>
               <AvatarImage />
               <AvatarFallback className="bg-blue-200 font-semibold">
@@ -64,6 +64,7 @@ const Navbar = () => {
               </AvatarFallback>
             </Avatar>
             <p className="hidden sm:block underline text-blue-500">{user}</p>
+            <ChevronDown size={20} className="hidden sm:block" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem asChild>

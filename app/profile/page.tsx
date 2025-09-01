@@ -6,21 +6,22 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-interface User {
+type User = {
   id: string;
   username: string;
   role: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-const Page = async () => {
+const Page: React.FC = async () => {
   const res = await axios.get("/auth/profile", {
     headers: {
       Authorization: `Bearer ${await getToken()}`,
     },
   });
   const user: User = res.data;
+
   return (
     <>
       <Navbar />
@@ -31,7 +32,10 @@ const Page = async () => {
             {user.username[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <Button asChild className="w-full sm:w-sm">
+        <Button
+          asChild
+          className="w-full sm:w-sm bg-blue-500 hover:bg-blue-600"
+        >
           <Link href="/">Back to Home</Link>
         </Button>
       </div>
